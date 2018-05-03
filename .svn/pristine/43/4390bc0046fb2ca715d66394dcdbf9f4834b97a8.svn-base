@@ -1,0 +1,16 @@
+<ion-content text-center padding-vertical>
+	<ion-row>
+		<ion-col col-4 no-padding *ngFor="let item of menuItems;let i=index;trackBy i;" [navPush]="item.url" [navParams]="item.param"
+		    class="menuIconWrap" [ngClass]="{'no-border-right': i===2 || i===5 || i===8}">
+			<button ion-button clear class="menuIcon">
+				<div>
+					<ion-icon name="{{item.icon}}" color="{{item.color}}"></ion-icon>
+					<label float-left class="menuLabel">{{item.name}}</label>
+				</div>
+			</button>
+		</ion-col>
+	</ion-row>
+	<!-- <div padding>
+		<button ion-button block [navPush]="list" [navParams]="params">Go</button>
+	</div> -->
+</ion-content>

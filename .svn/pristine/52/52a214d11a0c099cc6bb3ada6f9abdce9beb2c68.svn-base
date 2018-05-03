@@ -1,0 +1,80 @@
+import { Injectable } from "@angular/core";
+import { Http, Response, Headers } from "@angular/http";
+import { Observable } from "rxjs/Observable";
+import "rxjs/add/operator/catch";
+import "rxjs/add/operator/map";
+import { Utils } from "../../providers/utils/utils";
+
+/*
+  Generated class for the RestApiProvider provider.
+  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
+  for more info on providers and Angular DI.
+*/
+@Injectable()
+export class RestApiProvider {
+	//private apiUrl = 'https://reqres.in/api/';
+	//private apiUrl = "https://www.easy-mock.com/mock/5ac06d71a5bbc64b284023ec/ssg/";
+	headersForm: any;
+	//options: any;
+	constructor(public http: Http, public Utils: Utils) {
+		//console.log("Hello RestApiProvider Provider");
+		this.headersForm = new Headers({
+			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+		});
+	}
+
+	getUsers(apiUrl, page, per_page): Observable<string[]> {
+		return this.http
+			.get(
+				apiUrl +
+					"/pageVoList?pageindex=" +
+					page +
+					"&pagesize=" +
+					per_page
+			)
+			.map(this.extractData)
+			.catch(this.handleError);
+	}
+
+	logins(apiUrl, params): Observable<any> {
+		let paramSerialize: URLSearchParams = Utils.serializeParams(params);
+		return this.http
+			.post(apiUrl, paramSerialize, { headers: this.headersForm })
+			.map(this.extractData)
+			.catch(this.handleError);
+	}
+
+	private extractData(res: Response) {
+		console.log(res);
+		let body = res.json();
+		return body || {};
+	}
+
+	private handleError(error: Response | any) {
+		let errMsg: string;
+		if (error instanceof Response) {
+			const body = error.json() || "";
+			const err = body.error || JSON.stringify(body);
+			errMsg = `${error.status} - ${error.statusText || ""} ${err}`;
+		} else {
+			errMsg = error.message ? error.message : error.toString();
+		}
+		console.error(errMsg);
+		return Observable.throw(errMsg);
+	}
+
+	/**
+	 * 通用的后台地址
+	 * 如果只有一个人启动后台 地址改为启动人的后台地址
+	 * 如果本人启动，地址改为本人启动的后台地址
+	 * 跨域问题在ionic.config.json文件里设置代理"proxies": [
+		{
+			"path": "/",
+			"proxyUrl": "启动及使用的后台地址"
+		}
+	]
+	 */
+	public backEndUrl() {
+		return "http://172.16.1.115:8084";
+	}
+}
